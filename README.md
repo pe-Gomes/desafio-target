@@ -58,8 +58,63 @@ Você ficou responsável pela parte da estrutura de banco de dados que será usa
 - Aponte os campos que são chave primária (PK) e chave estrangeira (FK);
 - Faça uma busca utilizando comando SQL que traga o código, a razão social e o(s) telefone(s) de todos os clientes do estado de São Paulo (código “SP”);
 
+**R: Esquema de banco de dados**
+![DB Schema](./public/image.png)
+
+```SQL
+-- Criando as tabelas de acordo com o esquema acima.
+
+CREATE TABLE IF NOT EXISTS states (
+  id uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+  nome varchar(50) NOT NULL,
+  state_code varchar(2) UNIQUE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS phone_types (
+  id uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+  type_description varchar(50) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS clients (
+  id uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+  name varchar(255) NOT NULL,
+  document varchar(100) NOT NULL,
+  state_id uuid NOT NULL,
+  FOREIGN KEY (state_id) REFERENCES states(id)
+);
+
+CREATE TABLE IF NOT EXISTS phones (
+  id uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+  phone_number varchar(50) NOT NULL,
+  client_id uuid NOT NULL,
+  phone_type_id uuid NOT NULL,
+  FOREIGN KEY (client_id) REFERENCES clients(id),
+  FOREIGN KEY (phone_type_id) REFERENCES phone_types(id)
+);
+-- Query SQL para buscar os clientes do estado de São Paulo com união.
+SELECT
+  c.id,
+  c.document,
+  p.phone_number
+
+FROM
+  clients c
+
+JOIN
+  phones p ON c.id = p.client_id
+
+JOIN
+  states s ON c.state_id = s.id
+
+WHERE s.state_code = 'SP';
+```
+
 ## 5. Dois veículos, um carro e um caminhão, saem respectivamente de cidades opostas pela mesma rodovia. O carro, de Ribeirão Preto em direção a Barretos, a uma velocidade constante de 90 km/h, e o caminhão, de Barretos em direção a Ribeirão Preto, a uma velocidade constante de 80 km/h. Quando eles se cruzarem no percurso, qual estará mais próximo da cidade de Ribeirão Preto?
 
 a) Considerar a distância de 125km entre a cidade de Ribeirão Preto <-> Barretos.
 b) Considerar 3 pedágios como obstáculo e que o carro leva 5 minutos a mais para passar em cada um deles, pois ele não possui dispositivo de cobrança de pedágio.
 c)Explique como chegou no resultado.
+
+```
+
+```
